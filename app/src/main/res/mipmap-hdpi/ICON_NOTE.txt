@@ -1,0 +1,20 @@
+LAUNCHER ICON PLACEHOLDER
+
+The actual launcher icon images (ic_launcher.png, ic_launcher_round.png, ic_launcher_foreground.png) 
+need to be generated using Android Studio's Image Asset tool.
+
+To generate launcher icons:
+1. Right-click on 'res' folder in Android Studio
+2. Select New → Image Asset
+3. Choose Icon Type: Launcher Icons (Adaptive and Legacy)
+4. Configure your icon (use a calculator or AI-themed icon)
+5. Click Next → Finish
+
+The tool will automatically generate all required densities:
+- mipmap-mdpi
+- mipmap-hdpi
+- mipmap-xhdpi
+- mipmap-xxhdpi
+- mipmap-xxxhdpi
+
+For now, Android Studio will use the default Android icon.

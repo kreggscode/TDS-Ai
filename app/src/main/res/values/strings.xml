@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TDS AI Calculator</string>
+    
+    <!-- Navigation -->
+    <string name="nav_calculator">Calculator</string>
+    <string name="nav_learn">Learn</string>
+    <string name="nav_ai_chat">AI Chat</string>
+    <string name="nav_analysis">Analysis</string>
+    <string name="nav_settings">Settings</string>
+    
+    <!-- Calculator Screen -->
+    <string name="calculator_title">TDS Calculator</string>
+    <string name="income_label">Annual Income</string>
+    <string name="deductions_label">Deductions (80C)</string>
+    <string name="other_deductions_label">Other Deductions</string>
+    <string name="calculate_button">Calculate TDS</string>
+    <string name="reset_button">Reset</string>
+    
+    <!-- Learning Screen -->
+    <string name="learn_title">TDS Information</string>
+    
+    <!-- AI Chat Screen -->
+    <string name="chat_title">AI Assistant</string>
+    <string name="chat_hint">Ask me anything about TDS...</string>
+    
+    <!-- Analysis Screen -->
+    <string name="analysis_title">AI Analysis</string>
+    
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="theme_mode">Theme Mode</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="light_mode">Light Mode</string>
+    <string name="system_default">System Default</string>
+</resources>
