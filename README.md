@@ -1,8 +1,8 @@
 <div align="center">
 
-# 💧 TDS Water Quality Calculator
+# 💧 TDS Calculator
 
-### AI-Powered Water Quality Measurement App
+### Water Quality Measurement App
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.20-purple.svg)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-2023.10.01-green.svg)](https://developer.android.com/jetpack/compose)
@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/License-Educational-orange.svg)](LICENSE)
 [![Min SDK](https://img.shields.io/badge/Min%20SDK-26-brightgreen.svg)](https://developer.android.com)
 
-**A premium, AI-powered TDS (Total Dissolved Solids) water quality calculator Android application built with Kotlin and Jetpack Compose.**
+**TDS water quality calculator with AI analysis**
 
 [Features](#-features) • [Screenshots](#-screenshots) • [Tech Stack](#-tech-stack) • [Installation](#-installation) • [Contact](#-contact)
 
@@ -139,13 +139,15 @@ com.kreggscode.tdscalculator
 
 <div align="center">
 
-| Splash Screen | Calculator | AI Chat |
-|:---:|:---:|:---:|
-| ![Splash](docs/screenshots/splash.png) | ![Calculator](docs/screenshots/calculator.png) | ![Chat](docs/screenshots/chat.png) |
+| App Launch | TDS Calculator | AI Chat | Learning Center |
+|:---:|:---:|:---:|:---:|
+| Splash screen | Enter conductivity & temp | Water quality questions | TDS information |
+| ![Splash](docs/screenshots/splash.png) | ![Calculator](docs/screenshots/calculator.png) | ![Chat](docs/screenshots/chat.png) | ![Learning](docs/screenshots/learning.png) |
 
-| Learning | Analysis | Settings |
-|:---:|:---:|:---:|
-| ![Learning](docs/screenshots/learning.png) | ![Analysis](docs/screenshots/analysis.png) | ![Settings](docs/screenshots/settings.png) |
+| Quality Analysis | Settings | Results | Recommendations |
+|:---:|:---:|:---:|:---:|
+| TDS assessment | App preferences | Quality score | Treatment tips |
+| ![Analysis](docs/screenshots/analysis.png) | ![Settings](docs/screenshots/settings.png) | ![Results](docs/screenshots/results.png) | ![Tips](docs/screenshots/tips.png) |
 
 </div>
 
