@@ -1,5 +1,6 @@
 package com.kreggscode.tdscalculator.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.kreggscode.tdscalculator.data.models.ThemeMode
@@ -25,6 +27,7 @@ fun SettingsScreen(
     viewModel: TDSViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val themeMode by viewModel.themeMode.collectAsState()
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
     val scrollState = rememberScrollState()
@@ -37,7 +40,7 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
-                .padding(top = 20.dp, bottom = 100.dp)
+                .padding(top = 48.dp, bottom = 100.dp)
         ) {
             // Header
             Row(
@@ -178,7 +181,7 @@ fun SettingsScreen(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Tax reminders and updates",
+                                text = "Water quality reminders and updates",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -229,15 +232,11 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 InfoRow(label = "Version", value = "1.0.0")
-                Spacer(modifier = Modifier.height(8.dp))
-                InfoRow(label = "Developer", value = "KreggsCode")
-                Spacer(modifier = Modifier.height(8.dp))
-                InfoRow(label = "Package", value = "com.kreggscode.tdscalculator")
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 Text(
-                    text = "AI-powered TDS calculator with smart tax planning features. Built with Jetpack Compose and Material Design 3.",
+                    text = "AI-powered TDS (Total Dissolved Solids) calculator for water quality measurement. Built with Jetpack Compose and Material Design 3.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -250,7 +249,17 @@ fun SettingsScreen(
                 SettingItem(
                     icon = Icons.Default.Share,
                     label = "Share App",
-                    onClick = { /* Share functionality */ }
+                    onClick = {
+                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_SUBJECT, "Check out TDS Calculator")
+                            putExtra(
+                                Intent.EXTRA_TEXT,
+                                "Check out this amazing TDS (Total Dissolved Solids) water quality calculator app! \n\nhttps://play.google.com/store/apps/details?id=com.kreggscode.tdscalculator"
+                            )
+                        }
+                        context.startActivity(Intent.createChooser(shareIntent, "Share via"))
+                    }
                 )
                 
                 Divider(

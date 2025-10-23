@@ -15,8 +15,6 @@
 local.properties
 
 # Exclude other markdown files (keep only README.md)
-project.md
 BUILD_INSTRUCTIONS.md
 PROJECT_SUMMARY.md
-QUICK_START.md
 PROJECT_CHECKLIST.md

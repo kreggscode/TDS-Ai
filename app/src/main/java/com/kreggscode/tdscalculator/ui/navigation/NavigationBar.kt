@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
@@ -26,7 +27,7 @@ enum class NavDestination(
     val icon: ImageVector,
     val label: String
 ) {
-    CALCULATOR("calculator", Icons.Default.Calculate, "Calculator"),
+    CALCULATOR("calculator", Icons.Default.Calculate, "Calc"),
     LEARN("learn", Icons.Default.School, "Learn"),
     CHAT("chat", Icons.Default.Chat, "AI Chat"),
     ANALYSIS("analysis", Icons.Default.Analytics, "Analysis"),
@@ -40,31 +41,56 @@ fun FloatingGlassmorphicNavBar(
     modifier: Modifier = Modifier
 ) {
     val isDark = MaterialTheme.colorScheme.background == DarkBackground
-    val glassColor = if (isDark) GlassDark else GlassLight
-    val borderColor = if (isDark) BorderDark else BorderLight
+    
+    // True glassmorphic effect with transparency and blur
+    val glassColor = if (isDark) {
+        Color(0xFF1E1E2E).copy(alpha = 0.4f)  // More transparent
+    } else {
+        Color.White.copy(alpha = 0.5f)  // More transparent
+    }
+    
+    val borderColor = if (isDark) {
+        Color.White.copy(alpha = 0.15f)
+    } else {
+        Color.Black.copy(alpha = 0.08f)
+    }
     
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
-        Surface(
+        // Background blur layer
+        Box(
             modifier = Modifier
                 .height(72.dp)
+                .widthIn(max = 400.dp)
+                .clip(RoundedCornerShape(36.dp))
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            glassColor.copy(alpha = 0.6f),
+                            glassColor.copy(alpha = 0.4f)
+                        )
+                    )
+                )
                 .border(
                     width = 1.dp,
-                    color = borderColor,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            borderColor.copy(alpha = 0.3f),
+                            borderColor.copy(alpha = 0.1f)
+                        )
+                    ),
                     shape = RoundedCornerShape(36.dp)
-                ),
-            shape = RoundedCornerShape(36.dp),
-            color = glassColor,
-            shadowElevation = 12.dp
+                )
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -149,7 +175,9 @@ fun NavBarItem(
                 ) {
                     Text(
                         text = destination.label,
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = MaterialTheme.typography.labelSmall.fontSize * 0.85f
+                        ),
                         color = Color.White,
                         maxLines = 1
                     )

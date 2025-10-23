@@ -2,7 +2,9 @@ package com.kreggscode.tdscalculator.ui.screens
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +21,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.kreggscode.tdscalculator.data.models.ChatMessage
 import com.kreggscode.tdscalculator.ui.components.*
 import com.kreggscode.tdscalculator.ui.theme.*
@@ -27,18 +31,46 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ChatScreen(
     viewModel: TDSViewModel,
+    onNavigate: (com.kreggscode.tdscalculator.ui.navigation.NavDestination) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val chatMessages by viewModel.chatMessages.collectAsState()
     val currentMessage by viewModel.currentMessage.collectAsState()
     val isTyping by viewModel.isTyping.collectAsState()
     
+    var showClearChatDialog by remember { mutableStateOf(false) }
+    
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    
+    // Clear Chat Confirmation Dialog
+    if (showClearChatDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearChatDialog = false },
+            title = { Text("Clear Chat") },
+            text = { Text("Are you sure you want to clear the entire chat? This action cannot be undone.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.clearChat()
+                        showClearChatDialog = false
+                    }
+                ) {
+                    Text("Clear", color = WarningRed)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearChatDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
     
     // Auto-scroll to bottom when new messages arrive
     LaunchedEffect(chatMessages.size) {
@@ -49,13 +81,19 @@ fun ChatScreen(
         }
     }
     
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
         GradientBackground()
         
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .imePadding()
         ) {
-            // Header
+            // Header with Back Button
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
@@ -64,32 +102,46 @@ fun ChatScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp),
+                        .padding(start = 4.dp, end = 20.dp, top = 12.dp, bottom = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Text(
-                            text = "AI Assistant",
-                            style = MaterialTheme.typography.headlineMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        IconButton(
+                            onClick = { onNavigate(com.kreggscode.tdscalculator.ui.navigation.NavDestination.CALCULATOR) }
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .background(Emerald, CircleShape)
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back",
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
+                        }
+                        Column {
                             Text(
-                                text = "Online",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Emerald
+                                text = "AI Assistant",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = MaterialTheme.colorScheme.onBackground
                             )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .background(Emerald, CircleShape)
+                                )
+                                Text(
+                                    text = "Online",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Emerald
+                                )
+                            }
                         }
                     }
                     
@@ -110,6 +162,16 @@ fun ChatScreen(
                             size = 24.dp
                         )
                     }
+                    
+                    IconButton(
+                        onClick = { showClearChatDialog = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Clear Chat",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
             
@@ -120,11 +182,17 @@ fun ChatScreen(
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                contentPadding = PaddingValues(vertical = 16.dp),
+                contentPadding = PaddingValues(top = 16.dp, bottom = 180.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(chatMessages) { message ->
-                    ChatMessageBubble(message)
+                items(
+                    items = chatMessages,
+                    key = { it.timestamp }
+                ) { message ->
+                    ChatMessageBubble(
+                        message = message,
+                        onDelete = { viewModel.deleteMessage(message) }
+                    )
                 }
                 
                 // Typing Indicator
@@ -135,53 +203,109 @@ fun ChatScreen(
                 }
             }
             
-            // Input Field
+        }
+        
+        // Floating Input Field at bottom
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .imePadding()
+                .windowInsetsPadding(WindowInsets.navigationBars)
+        ) {
             Surface(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp),
+                shape = RoundedCornerShape(28.dp),
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-                shadowElevation = 8.dp
+                shadowElevation = 12.dp,
+                tonalElevation = 4.dp
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
-                        .padding(bottom = 80.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
                     OutlinedTextField(
                         value = currentMessage,
                         onValueChange = { viewModel.updateCurrentMessage(it) },
                         modifier = Modifier.weight(1f),
-                        placeholder = { Text("Ask me anything about TDS...") },
-                        shape = RoundedCornerShape(24.dp),
+                        placeholder = { 
+                            Text(
+                                "Ask about water quality...",
+                                style = MaterialTheme.typography.bodyMedium
+                            ) 
+                        },
+                        shape = RoundedCornerShape(20.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Indigo,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                            focusedBorderColor = AITeal,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
                         ),
-                        maxLines = 4
+                        maxLines = 4,
+                        textStyle = MaterialTheme.typography.bodyMedium
                     )
                     
                     FloatingActionButton(
-                        onClick = { viewModel.sendMessage() },
-                        containerColor = Indigo,
-                        modifier = Modifier.size(56.dp)
+                        onClick = { 
+                            if (currentMessage.isNotEmpty()) {
+                                viewModel.sendMessage()
+                                keyboardController?.hide()
+                            }
+                        },
+                        containerColor = if (currentMessage.isNotEmpty()) AITeal else MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier.size(48.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Send,
                             contentDescription = "Send",
-                            tint = Color.White
+                            tint = if (currentMessage.isNotEmpty()) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
         }
     }
+
 }
 
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ChatMessageBubble(message: ChatMessage) {
+fun ChatMessageBubble(
+    message: ChatMessage,
+    onDelete: () -> Unit = {}
+) {
     val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Delete Message") },
+            text = { Text("Are you sure you want to delete this message?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDelete()
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("Delete", color = WarningRed)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
     
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -226,7 +350,11 @@ fun ChatMessageBubble(message: ChatMessage) {
                 } else {
                     MaterialTheme.colorScheme.surfaceVariant
                 },
-                shadowElevation = 2.dp
+                shadowElevation = 2.dp,
+                modifier = Modifier.combinedClickable(
+                    onClick = {},
+                    onLongClick = { showDeleteDialog = true }
+                )
             ) {
                 Text(
                     text = message.text,
@@ -336,3 +464,4 @@ fun TypingDot(delay: Int) {
             )
     )
 }
+

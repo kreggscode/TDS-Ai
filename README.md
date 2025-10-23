@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🧮 TDS AI Calculator
+# 💧 TDS Water Quality Calculator
 
-### AI-Powered Tax Deduction at Source Calculator
+### AI-Powered Water Quality Measurement App
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.20-purple.svg)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-2023.10.01-green.svg)](https://developer.android.com/jetpack/compose)
@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/License-Educational-orange.svg)](LICENSE)
 [![Min SDK](https://img.shields.io/badge/Min%20SDK-26-brightgreen.svg)](https://developer.android.com)
 
-**A premium, AI-powered TDS (Tax Deducted at Source) calculator Android application built with Kotlin and Jetpack Compose.**
+**A premium, AI-powered TDS (Total Dissolved Solids) water quality calculator Android application built with Kotlin and Jetpack Compose.**
 
 [Features](#-features) • [Screenshots](#-screenshots) • [Tech Stack](#-tech-stack) • [Installation](#-installation) • [Contact](#-contact)
 
@@ -18,35 +18,38 @@
 
 ---
 
-## Features
+## ✨ Features
 
-### 🧮 TDS Calculator
-- Real-time tax calculation based on income and deductions
-- Support for Section 80C deductions (up to ₹1.5 lakh)
-- Other deductions including NPS, health insurance, etc.
-- Detailed tax slab breakdown
+### 💧 TDS Water Quality Calculator
+- Real-time TDS calculation from electrical conductivity
+- Temperature compensation for accurate readings
+- Customizable conversion factor (default 0.64)
+- Water quality rating system (Excellent to Unacceptable)
+- Detailed quality breakdown with visual indicators
 - Animated progress indicators and visualizations
 
 ### 📚 Learning Center
-- Comprehensive TDS information
-- Tax slabs and rates
-- Deduction options explained
+- Comprehensive TDS and water quality information
+- Understanding TDS measurements (ppm/mg/L)
+- Water quality levels and safety standards
+- Measurement methods and best practices
+- Water treatment options (RO, Distillation, etc.)
 - Collapsible cards for easy navigation
-- Tax-saving strategies
 
-### 🤖 AI Chat Assistant
-- Interactive AI chatbot for TDS queries
-- Real-time responses
-- Typing indicators
-- Chat history
-- Smart suggestions and clarifications
+### 🤖 AI Chat Assistant (Powered by Pollinations.AI)
+- Interactive AI chatbot for water quality queries
+- Real-time responses about TDS and water safety
+- Typing indicators and smooth animations
+- Chat history with timestamp
+- Expert advice on water treatment methods
+- Floating input box with keyboard handling
 
 ### 📊 AI Analysis
-- Tax efficiency score
-- Detailed breakdown of income distribution
-- AI-powered recommendations for tax optimization
+- Water quality assessment score
+- Detailed breakdown of TDS levels
+- AI-powered recommendations for water treatment
 - Visual charts and progress bars
-- Personalized tax-saving tips
+- Personalized water quality improvement tips
 
 ### ⚙️ Settings
 - Light/Dark/System theme modes
@@ -108,7 +111,7 @@ com.kreggscode.tdscalculator
 2. **CalculatorScreen** - TDS calculation interface
 3. **LearningScreen** - Educational content
 4. **ChatScreen** - AI assistant chat
-5. **AnalysisScreen** - Tax analysis and insights
+5. **AnalysisScreen** - Water quality analysis and insights
 6. **SettingsScreen** - App preferences
 
 ## Building the App
@@ -177,7 +180,29 @@ com.kreggscode.tdscalculator
 
 ## 📱 Download
 
-Coming soon to Google Play Store!
+[![Get it on Google Play](https://img.shields.io/badge/Google_Play-Download-green.svg)](https://play.google.com/store/apps/details?id=com.kreggscode.tdscalculator)
+
+## 🌊 What is TDS?
+
+**TDS (Total Dissolved Solids)** measures the concentration of dissolved substances in water, including:
+- Minerals (Calcium, Magnesium, Potassium)
+- Salts (Sodium chloride, Carbonates)
+- Metals (Iron, Copper, Zinc)
+- Other dissolved particles
+
+### Water Quality Levels:
+- **50-150 ppm**: Excellent - Ideal for drinking
+- **150-300 ppm**: Good - Acceptable for drinking
+- **300-500 ppm**: Fair - May affect taste
+- **500-900 ppm**: Poor - Not ideal for drinking
+- **Above 900 ppm**: Unacceptable - Requires treatment
+
+### How It Works:
+1. **Measure** electrical conductivity (µS/cm) with a TDS meter
+2. **Apply** temperature compensation for accuracy
+3. **Calculate** TDS = Conductivity × Conversion Factor
+4. **Assess** water quality based on TDS level
+5. **Get** AI-powered recommendations for treatment
 
 ## 🤝 Contributing
 
@@ -194,6 +219,7 @@ This project is for educational and demonstration purposes.
 - 📧 Email: [kreg9da@gmail.com](mailto:kreg9da@gmail.com)
 - 📦 Package: `com.kreggscode.tdscalculator`
 - 🔖 Version: 1.0.0
+- 🌐 Play Store: [Download App](https://play.google.com/store/apps/details?id=com.kreggscode.tdscalculator)
 
 ## 🌐 Links
 

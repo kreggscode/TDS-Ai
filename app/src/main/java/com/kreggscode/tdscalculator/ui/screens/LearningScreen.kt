@@ -23,6 +23,7 @@ import com.kreggscode.tdscalculator.data.models.TDSInfo
 import com.kreggscode.tdscalculator.ui.components.*
 import com.kreggscode.tdscalculator.ui.theme.*
 import com.kreggscode.tdscalculator.ui.viewmodels.TDSViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun LearningScreen(
@@ -31,6 +32,10 @@ fun LearningScreen(
 ) {
     val tdsInfoList by viewModel.tdsInfoList.collectAsState()
     val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+    
+    var aiAnalysisMap by remember { mutableStateOf<Map<Int, String>>(emptyMap()) }
+    var analyzingIndex by remember { mutableStateOf<Int?>(null) }
     
     Box(modifier = modifier.fillMaxSize()) {
         GradientBackground()
@@ -40,7 +45,7 @@ fun LearningScreen(
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
-                .padding(top = 20.dp, bottom = 100.dp)
+                .padding(top = 48.dp, bottom = 100.dp)
         ) {
             // Header
             Row(
@@ -57,7 +62,7 @@ fun LearningScreen(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = "Everything about tax deduction",
+                        text = "Understanding water quality",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -89,7 +94,21 @@ fun LearningScreen(
             tdsInfoList.forEachIndexed { index, info ->
                 ExpandableInfoCard(
                     info = info,
-                    onToggle = { viewModel.toggleInfoExpansion(index) }
+                    onToggle = { viewModel.toggleInfoExpansion(index) },
+                    aiAnalysis = aiAnalysisMap[index],
+                    isAnalyzing = analyzingIndex == index,
+                    onAnalyzeClick = {
+                        analyzingIndex = index
+                        coroutineScope.launch {
+                            val analysis = viewModel.getAIAnalysis(
+                                tdsValue = 0.0,
+                                conductivity = 0.0,
+                                temperature = 0.0
+                            )
+                            aiAnalysisMap = aiAnalysisMap + (index to "Provide more detailed explanation about: ${info.title}. ${info.description}")
+                            analyzingIndex = null
+                        }
+                    }
                 )
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -101,7 +120,10 @@ fun LearningScreen(
 @Composable
 fun ExpandableInfoCard(
     info: TDSInfo,
-    onToggle: () -> Unit
+    onToggle: () -> Unit,
+    aiAnalysis: String? = null,
+    isAnalyzing: Boolean = false,
+    onAnalyzeClick: () -> Unit = {}
 ) {
     val rotationAngle by animateFloatAsState(
         targetValue = if (info.isExpanded) 180f else 0f,
@@ -192,6 +214,80 @@ fun ExpandableInfoCard(
                         }
                         
                         Spacer(modifier = Modifier.height(12.dp))
+                    }
+                    
+                    // AI Analysis Button
+                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .background(
+                                        Brush.linearGradient(
+                                            colors = listOf(AITeal, AIIndigo)
+                                        ),
+                                        CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (isAnalyzing) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(16.dp),
+                                        color = Color.White,
+                                        strokeWidth = 2.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Default.SmartToy,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                            
+                            Text(
+                                text = "AI Insights",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        
+                        if (aiAnalysis == null) {
+                            Button(
+                                onClick = onAnalyzeClick,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = AITeal
+                                ),
+                                modifier = Modifier.height(36.dp),
+                                enabled = !isAnalyzing
+                            ) {
+                                Text("Ask AI", style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                    }
+                    
+                    if (aiAnalysis != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Text(
+                            text = aiAnalysis,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                        )
                     }
                 }
             }

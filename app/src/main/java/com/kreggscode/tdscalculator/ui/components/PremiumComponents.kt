@@ -308,15 +308,28 @@ fun ShimmerEffect(
 
 @Composable
 fun GradientBackground(
-    modifier: Modifier = Modifier,
-    gradient: Brush = Brush.verticalGradient(
-        colors = listOf(
-            GradientStart.copy(alpha = 0.1f),
-            GradientMiddle.copy(alpha = 0.05f),
-            GradientEnd.copy(alpha = 0.1f)
-        )
-    )
+    modifier: Modifier = Modifier
 ) {
+    val isDark = MaterialTheme.colorScheme.background == DarkBackground
+    
+    val gradient = if (isDark) {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFF1a1f35),  // Darker blue-gray
+                Color(0xFF0f1729),  // Very dark blue
+                Color(0xFF1a1535)   // Dark purple tint
+            )
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = listOf(
+                GradientStart.copy(alpha = 0.1f),
+                GradientMiddle.copy(alpha = 0.05f),
+                GradientEnd.copy(alpha = 0.1f)
+            )
+        )
+    }
+    
     Box(
         modifier = modifier
             .fillMaxSize()

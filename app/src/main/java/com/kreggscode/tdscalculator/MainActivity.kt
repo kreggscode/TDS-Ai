@@ -1,6 +1,9 @@
 package com.kreggscode.tdscalculator
 
+import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +14,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kreggscode.tdscalculator.data.models.ThemeMode
@@ -26,9 +31,28 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Enable edge-to-edge
+        // Enable edge-to-edge with transparent system bars
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        
+        // Make system bars fully transparent
+        window.statusBarColor = Color.Transparent.toArgb()
+        window.navigationBarColor = Color.Transparent.toArgb()
+        
+        // Set light/dark icons based on system theme
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.setSystemBarsAppearance(
+                0,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            )
+        }
         
         setContent {
             val viewModel: TDSViewModel = hiltViewModel()
@@ -58,22 +82,13 @@ fun TDSApp(viewModel: TDSViewModel) {
             onSplashComplete = { showSplash = false }
         )
     } else {
-        Scaffold(
-            containerColor = MaterialTheme.colorScheme.background,
-            bottomBar = {
-                FloatingGlassmorphicNavBar(
-                    currentDestination = currentDestination,
-                    onNavigate = { destination ->
-                        currentDestination = destination
-                    }
-                )
-            }
-        ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Content
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .windowInsetsPadding(WindowInsets.systemBars)
+                modifier = Modifier.fillMaxSize()
             ) {
                 AnimatedContent(
                     targetState = currentDestination,
@@ -92,10 +107,28 @@ fun TDSApp(viewModel: TDSViewModel) {
                     when (destination) {
                         NavDestination.CALCULATOR -> CalculatorScreen(viewModel = viewModel)
                         NavDestination.LEARN -> LearningScreen(viewModel = viewModel)
-                        NavDestination.CHAT -> ChatScreen(viewModel = viewModel)
+                        NavDestination.CHAT -> ChatScreen(
+                            viewModel = viewModel,
+                            onNavigate = { currentDestination = it }
+                        )
                         NavDestination.ANALYSIS -> AnalysisScreen(viewModel = viewModel)
                         NavDestination.SETTINGS -> SettingsScreen(viewModel = viewModel)
                     }
+                }
+            }
+            
+            // Floating Navigation Bar (overlaid on top)
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = androidx.compose.ui.Alignment.BottomCenter
+            ) {
+                if (currentDestination != NavDestination.CHAT) {
+                    FloatingGlassmorphicNavBar(
+                        currentDestination = currentDestination,
+                        onNavigate = { destination ->
+                            currentDestination = destination
+                        }
+                    )
                 }
             }
         }

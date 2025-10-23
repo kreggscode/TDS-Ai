@@ -37,7 +37,7 @@ class TDSViewModel @Inject constructor(
     private val _chatMessages = MutableStateFlow<List<ChatMessage>>(
         listOf(
             ChatMessage(
-                text = "Hello! I'm your AI TDS assistant. How can I help you today?",
+                text = "Hello! I'm your AI water quality assistant. I can help you understand TDS (Total Dissolved Solids) measurements, water quality levels, and treatment methods. How can I help you today?",
                 isUser = false
             )
         )
@@ -63,19 +63,23 @@ class TDSViewModel @Inject constructor(
     
     init {
         loadTDSInformation()
+        // Set default conversion factor for natural freshwater
+        _otherDeductions.value = "0.64"
+        // Set default temperature
+        _deductions80C.value = "25"
     }
     
     // Calculator Functions
     fun updateGrossIncome(value: String) {
-        _grossIncome.value = value.filter { it.isDigit() }
+        _grossIncome.value = value.filter { it.isDigit() || it == '.' }
     }
     
     fun updateDeductions80C(value: String) {
-        _deductions80C.value = value.filter { it.isDigit() }
+        _deductions80C.value = value.filter { it.isDigit() || it == '.' }
     }
     
     fun updateOtherDeductions(value: String) {
-        _otherDeductions.value = value.filter { it.isDigit() }
+        _otherDeductions.value = value.filter { it.isDigit() || it == '.' }
     }
     
     fun calculateTDS() {
@@ -83,11 +87,12 @@ class TDSViewModel @Inject constructor(
             _isCalculating.value = true
             delay(500) // Simulate calculation time for animation
             
-            val income = _grossIncome.value.toDoubleOrNull() ?: 0.0
-            val deductions80C = _deductions80C.value.toDoubleOrNull() ?: 0.0
-            val otherDeductions = _otherDeductions.value.toDoubleOrNull() ?: 0.0
+            // Reusing existing fields for water quality parameters
+            val conductivity = _grossIncome.value.toDoubleOrNull() ?: 0.0  // Electrical conductivity in µS/cm
+            val temperature = _deductions80C.value.toDoubleOrNull() ?: 25.0  // Water temperature in °C (default 25°C)
+            val conversionFactor = _otherDeductions.value.toDoubleOrNull() ?: 0.64  // Conversion factor (default 0.64)
             
-            val result = repository.calculateTDS(income, deductions80C, otherDeductions)
+            val result = repository.calculateTDS(conductivity, temperature, conversionFactor)
             _calculationResult.value = result
             
             _isCalculating.value = false
@@ -118,15 +123,55 @@ class TDSViewModel @Inject constructor(
             
             // Show typing indicator
             _isTyping.value = true
-            delay(1000) // Simulate AI thinking
             
-            // Get AI response
+            // Get AI response from Pollinations.AI
             val aiResponse = repository.getAIResponse(message)
             val aiMessage = ChatMessage(text = aiResponse, isUser = false)
             
             _isTyping.value = false
             _chatMessages.value = _chatMessages.value + aiMessage
         }
+    }
+    
+    fun deleteMessage(message: ChatMessage) {
+        _chatMessages.value = _chatMessages.value.filter { it != message }
+    }
+    
+    fun clearChat() {
+        _chatMessages.value = listOf(
+            ChatMessage(
+                text = "Hello! I'm your AI water quality assistant. I can help you understand TDS (Total Dissolved Solids) measurements, water quality levels, and treatment methods. How can I help you today?",
+                isUser = false
+            )
+        )
+    }
+    
+    fun analyzeWaterQuality(tdsValue: Double, conductivity: Double, temperature: Double): String {
+        val prompt = """Analyze this water quality measurement:
+            - TDS: $tdsValue ppm
+            - Conductivity: $conductivity µS/cm
+            - Temperature: $temperature°C
+            
+            Provide a brief analysis (2-3 sentences) about:
+            1. What this TDS level means for drinking water
+            2. Any health considerations
+            3. Recommendations if needed""".trimIndent()
+        
+        return "Analyzing water quality..."
+    }
+    
+    suspend fun getAIAnalysis(tdsValue: Double, conductivity: Double, temperature: Double): String {
+        val prompt = """Analyze this water quality measurement:
+            - TDS: $tdsValue ppm
+            - Conductivity: $conductivity µS/cm
+            - Temperature: $temperature°C
+            
+            Provide a brief analysis (2-3 sentences) about:
+            1. What this TDS level means for drinking water
+            2. Any health considerations
+            3. Recommendations if needed""".trimIndent()
+        
+        return repository.getAIResponse(prompt)
     }
     
     // Learning Functions

@@ -117,10 +117,10 @@ fun SplashScreen(
             
             // App Name
             Text(
-                text = "TDS AI Calculator",
+                text = "TDS AI",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 32.sp
+                    fontSize = 36.sp
                 ),
                 color = Color.White,
                 modifier = Modifier.alpha(alpha)
@@ -130,9 +130,20 @@ fun SplashScreen(
             
             // Tagline
             Text(
-                text = "Smart Tax Planning Assistant",
-                style = MaterialTheme.typography.bodyLarge,
+                text = "Total Dissolved Solids",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Medium
+                ),
                 color = Color.White.copy(alpha = 0.9f),
+                modifier = Modifier.alpha(alpha)
+            )
+            
+            Spacer(modifier = Modifier.height(4.dp))
+            
+            Text(
+                text = "Water Quality Analysis",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.White.copy(alpha = 0.8f),
                 modifier = Modifier.alpha(alpha)
             )
             

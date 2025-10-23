@@ -19,6 +19,7 @@ val SuccessTeal = Color(0xFF14B8A6)
 
 // Warning Gradient - Amber to Red
 val Amber = Color(0xFFF59E0B)
+val WarningOrange = Color(0xFFF97316)
 val WarningRed = Color(0xFFEF4444)
 
 // Light Theme Colors
