@@ -10,7 +10,9 @@
 [![License](https://img.shields.io/badge/License-Educational-orange.svg)](LICENSE)
 [![Min SDK](https://img.shields.io/badge/Min%20SDK-26-brightgreen.svg)](https://developer.android.com)
 
-**TDS water quality calculator with AI analysis**
+**Android app for measuring water quality through TDS calculations, featuring AI-powered analysis, educational content, and treatment recommendations.**
+
+This comprehensive water quality measurement tool helps users understand and monitor Total Dissolved Solids (TDS) in their water. Whether you're testing tap water, well water, or filtered water, the app provides accurate TDS calculations from conductivity readings, temperature compensation, and customizable conversion factors. Get instant water quality ratings from "Excellent" to "Unacceptable" with detailed visual feedback and AI-powered recommendations for water treatment solutions.
 
 [Features](#-features) • [Screenshots](#-screenshots) • [Tech Stack](#-tech-stack) • [Installation](#-installation) • [Contact](#-contact)
 
